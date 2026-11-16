@@ -349,6 +349,7 @@ pre{background:var(--ink);color:#f4f4f4;padding:1rem 1.15rem;overflow-x:auto;
 pre .c{color:#8d8d8d}
 code{font-family:"IBM Plex Mono",monospace;font-size:.9em;background:var(--paper-2);padding:.1em .35em}
 pre code{background:none;padding:0;font-size:inherit;color:inherit}
+.tscroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
 table{border-collapse:collapse;width:100%;font-size:.93rem;margin-top:.4rem}
 th,td{text-align:left;padding:.8rem 1rem .8rem 0;border-bottom:1px solid var(--rule-soft);vertical-align:top}
 th{font-weight:500;font-size:.85rem;color:var(--ink-3);border-bottom:1px solid var(--rule)}
@@ -571,10 +572,11 @@ py -3.12 -m venv .venv
           <h3>Draw one plan</h3>
           <p>
             Exports the actual cuts, fragments, and shot ledger as an SVG. Include it in
-            your writeup.
+            your writeup. Case 1 is width-constrained, so you will see real cuts; try
+            case 0 as well, where the planner decides not to cut at all.
           </p>
 <pre><code>python python/visualize_plan.py --manifest data/fallfest/manifest.json \
-  --case 0 --mode auto_cut --output results/fallfest-plan</code></pre>
+  --case 1 --mode auto_cut --output results/fallfest-plan</code></pre>
         </div>
       </div>
     </div>
@@ -584,6 +586,34 @@ py -3.12 -m venv .venv
       wrong call. Two more are controls with an exact known answer. Those are there on
       purpose: finding where cutting hurts is as much of a result as finding where it
       helps.
+    </div>
+
+    <h3 style="margin-top:2.8rem;margin-bottom:.6rem">Check your numbers against these</h3>
+    <p style="font-size:.95rem;color:var(--ink-2);max-width:68ch;margin-bottom:1rem">
+      Step 2 takes about a minute and writes 120 run records. Step 3 should print four
+      methods. If your table looks like this, your setup is correct and you can start
+      the actual work.
+    </p>
+    <div class="tscroll"><table>
+      <thead>
+        <tr><th>Mode and allocation</th><th class="wt">Coverage</th><th class="wt">Macro RMSE</th><th>Meaning</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>direct, equal</td><td class="wt">0.60</td><td class="wt">none</td><td>Cannot run 4 of 10 cases, so it does not qualify.</td></tr>
+        <tr><td>direct, coefficient</td><td class="wt">0.60</td><td class="wt">none</td><td>Same. Allocation cannot fix a width limit.</td></tr>
+        <tr><td>auto_cut, equal</td><td class="wt">1.00</td><td class="wt">0.0322</td><td>Covers everything, but spends the budget bluntly.</td></tr>
+        <tr><td>auto_cut, coefficient</td><td class="wt">1.00</td><td class="wt">0.0258</td><td>Same circuits, same shots, 20 percent less error.</td></tr>
+      </tbody>
+    </table></div>
+    <p class="sub" style="margin-top:.9rem">
+      Sampling is random, so your last digits will differ. The ordering should not.
+    </p>
+
+    <div class="callout">
+      Look closely at the first two rows before you conclude cutting wins. On the six
+      cases direct execution can run, its error is about 0.0267, better than cut
+      execution managed across all ten. Cutting bought you coverage, not accuracy.
+      Explaining that trade is the heart of this challenge.
     </div>
   </div>
 </section>
@@ -636,7 +666,7 @@ py -3.12 -m venv .venv
         dataset to download.
       </p>
     </div>
-    <table>
+    <div class="tscroll"><table>
       <thead>
         <tr><th>Family</th><th>What it is</th><th>What you estimate</th></tr>
       </thead>
@@ -662,7 +692,7 @@ py -3.12 -m venv .venv
           <td>An endpoint correlation. "Modular" means circuit modules, not modular arithmetic.</td>
         </tr>
       </tbody>
-    </table>
+    </table></div>
   </div>
 </section>
 
@@ -675,7 +705,7 @@ py -3.12 -m venv .venv
         you. What you did with them will.
       </p>
     </div>
-    <table>
+    <div class="tscroll"><table>
       <thead>
         <tr><th>Criterion</th><th class="wt">Weight</th><th>What we look for</th></tr>
       </thead>
@@ -686,7 +716,7 @@ py -3.12 -m venv .venv
         <tr><td>Going further</td><td class="wt">10%</td><td>Anything past the baseline: a changed condition, an extra axis, a hypothesis you tested.</td></tr>
         <tr><td>Reproducibility</td><td class="wt">10%</td><td>We can run your notebook start to finish and get your numbers.</td></tr>
       </tbody>
-    </table>
+    </table></div>
     <div class="callout">
       A case that fails stays in your results. Hiding it costs you more than the failure
       does. A submission that shows cutting losing on four cases and explains why beats
